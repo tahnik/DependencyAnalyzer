@@ -1,0 +1,6 @@
+gui -> awtui swingui
+swingui -> runner extensions
+textui -> runner framework
+awtui -> runner
+runner -> framework
+extensions -> framework
