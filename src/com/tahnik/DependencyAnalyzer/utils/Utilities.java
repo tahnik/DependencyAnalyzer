@@ -9,8 +9,6 @@ import java.util.regex.Pattern;
 
 /**
  * Created by Tahnik Mustasin on 10/06/2016.
- * The reason for making this utilities class singleton rather than static is to make unit test
- * easier on the class.
  */
 public class Utilities {
     /* This is singleton instance */
@@ -41,12 +39,10 @@ public class Utilities {
                     System.out.println("Please use the right format for package and dependency\n" +
                             "A correct format is: gui -> swingui awtui\n");
                     System.exit(0);
-                }else if(!line.contains("")){
+                }else if(!checkIfLineIsEmpty(line)){
                     lines.add(line);
                 }
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
