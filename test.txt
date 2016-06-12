@@ -2,5 +2,7 @@ gui -> awtui swingui
 swingui -> runner extensions
 textui -> runner framework
 awtui -> runner
-runner -> framework
+runner -> framework gui
 extensions -> framework
+pkg -> pkgl pkgw pkg
+pkgw -> pkgr

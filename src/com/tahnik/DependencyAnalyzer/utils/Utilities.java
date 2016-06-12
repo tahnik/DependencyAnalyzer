@@ -140,8 +140,11 @@ public class Utilities {
         ConcurrentHashMap<String, Package> packages = utilities.getPackageList(filename);
         ArrayList<String> dependencies = new ArrayList<>();
         for(String pkg : packagesToDisplay){
-            System.out.print(pkg + " -> ");
+            dependencies.add(pkg);
 
+//            for(String depTemp: dependencies){
+//                System.out.print(depTemp + " ");
+//            }
             try {
                 ArrayList<Package> pkgDependecies = packages.get(pkg).getDependencies();
                 printDependencies(pkgDependecies, dependencies, packages);
@@ -149,7 +152,8 @@ public class Utilities {
                 //This means there's no dependency
             }
 
-
+            System.out.print(dependencies.get(0) + " -> ");
+            dependencies.remove(0);
             Collections.sort(dependencies);
             for(String depTemp: dependencies){
                 System.out.print(depTemp + " ");
@@ -163,12 +167,10 @@ public class Utilities {
         ArrayList<Package> temporaryPackages = null;
         try {
             for (Package pkg : pkgs) {
-                if(!dependencies.contains(pkg.getPackageName())) {
+                if (packages.get(pkg.getPackageName()) != null && !dependencies.contains(pkg.getPackageName())) {
                     dependencies.add(pkg.getPackageName());
-                }
-                if (packages.get(pkg.getPackageName()) != null) {
                     temporaryPackages = pkg.getDependencies();
-                    printDependencies(temporaryPackages , dependencies, packages);
+                    printDependencies(temporaryPackages, dependencies, packages);
                 }
             }
         }catch (NullPointerException e){

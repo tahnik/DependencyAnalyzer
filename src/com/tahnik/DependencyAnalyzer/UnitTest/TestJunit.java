@@ -74,4 +74,9 @@ public class TestJunit extends TestCase {
         }
     }
 
+    @Test
+    public void testPrintPackageDependencies(){
+        String args[] = {"test.txt", "gui", "framework", "runner"};
+        utilities.printPackageDependency(args);
+    }
 }
