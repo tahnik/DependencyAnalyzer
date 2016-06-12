@@ -85,7 +85,6 @@ public class Utilities {
                     j++;
                 }
             }
-
             splitLines.put(packageName, dependencies);
         }
         return splitLines;
@@ -120,14 +119,61 @@ public class Utilities {
             String[] line = (String[]) splitLines.get(me.getKey().toString());
             Package pkg = (Package) me.getValue();
             for(String word : line){
-                //System.out.println("The word is: " + word);
                 packages.putIfAbsent(word, new Package(word));
-                //System.out.println("The package is: " + packages.get(word));
                 pkg.setDependencies(packages.get(word));
             }
         }
 
         return packages;
+    }
+
+    public void printPackageDependency(String[] args){
+        String filename = args[0];
+        String[] packagesToDisplay = new String[args.length - 1];
+        if(args.length > 1){
+            int j = 0;
+            for(int i = 1 ; i < args.length ; i++){
+                packagesToDisplay[j] = args[i];
+                j++;
+            }
+        }
+        ConcurrentHashMap<String, Package> packages = utilities.getPackageList(filename);
+        ArrayList<String> dependencies = new ArrayList<>();
+        for(String pkg : packagesToDisplay){
+            System.out.print(pkg + " -> ");
+
+            try {
+                ArrayList<Package> pkgDependecies = packages.get(pkg).getDependencies();
+                printDependencies(pkgDependecies, dependencies, packages);
+            }catch (NullPointerException e){
+                //This means there's no dependency
+            }
+
+
+            Collections.sort(dependencies);
+            for(String depTemp: dependencies){
+                System.out.print(depTemp + " ");
+            }
+            System.out.println();
+            dependencies.clear();
+        }
+    }
+
+    public void printDependencies(ArrayList<Package> pkgs, ArrayList<String> dependencies, ConcurrentHashMap<String, Package> packages){
+        ArrayList<Package> temporaryPackages = null;
+        try {
+            for (Package pkg : pkgs) {
+                if(!dependencies.contains(pkg.getPackageName())) {
+                    dependencies.add(pkg.getPackageName());
+                }
+                if (packages.get(pkg.getPackageName()) != null) {
+                    temporaryPackages = pkg.getDependencies();
+                    printDependencies(temporaryPackages , dependencies, packages);
+                }
+            }
+        }catch (NullPointerException e){
+            return;
+        }
     }
 
 }

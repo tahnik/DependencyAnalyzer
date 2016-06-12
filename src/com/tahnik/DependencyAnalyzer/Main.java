@@ -4,6 +4,6 @@ import com.tahnik.DependencyAnalyzer.utils.Utilities;
 
 public class Main{
     public static void main(String[] args){
-        Utilities.getInstance().getPackageList("test.txt");
+        Utilities.getInstance().printPackageDependency(args);
     }
 }
