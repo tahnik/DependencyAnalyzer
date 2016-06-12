@@ -10,9 +10,8 @@ public class Package {
     private ArrayList<Package> dependencies = null;
 
     public Package(String name){
-        this.packageName = name;
+        setPackageName(name);
     }
-
     private void initializeDependencies(){
         if(dependencies == null){
             dependencies = new ArrayList<>();
@@ -26,5 +25,13 @@ public class Package {
 
     public ArrayList<Package> getDependencies(){
         return dependencies;
+    }
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
     }
 }

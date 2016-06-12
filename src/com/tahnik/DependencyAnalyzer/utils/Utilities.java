@@ -1,11 +1,12 @@
 package com.tahnik.DependencyAnalyzer.utils;
 
+import com.tahnik.DependencyAnalyzer.Package;
+
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.regex.Pattern;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Tahnik Mustasin on 10/06/2016.
@@ -54,20 +55,79 @@ public class Utilities {
 
         /*  The first part checks if the line has a-z, whitespace and -> sign
             The second part checks if there's any special characters other than ->
+            The third part check if there's two package name before ->
             How second part works:
                 The first part of the second check evaluates to true if there's any special characters. But the second
                 part will become false if it's not -> separated by white space. Instead of (.*->.*) I have used
                 [([a-z\s]*)]*\s->\s[([a-z\s]*)]* otherwise it will become false for any characters before or after
                 ignoring any special characters.
+            The third part works in a similar way
          */
-        if(!line.matches("([a-z\\s]*)(.*->.*)") || (line.matches(".*\\p{Punct}.*") && !line.matches("[([a-z\\s]*)]*\\s->\\s[([a-z\\s]*)]*"))){
+        if(!line.matches("([a-z\\s]*)(.*->.*)")
+                || (line.matches(".*\\p{Punct}.*") && !line.matches("[([a-z\\s]*)]*\\s->\\s[([a-z\\s]*)]*"))
+                || (line.matches("[\\s]*[a-z]*[\\s]*[a-z]*[\\s]*->.*") && !line.matches("[\\s]*[a-z]*[\\s]*->.*")) ){
             verificationPassed = false;
         }
         return verificationPassed;
     }
 
+    public HashMap splitLines(ArrayList<String> lines){
+        HashMap splitLines = new HashMap();
+
+        for (String line: lines) {
+            String[] lineArray = line.split("\\s+");
+            String packageName = lineArray[0];
+            String[] dependencies = new String[lineArray.length - 2];
+            if(lineArray.length > 1){
+                int j = 0;
+                for(int i = 2; i < lineArray.length ; i++){
+                    dependencies[j] = lineArray[i];
+                    j++;
+                }
+            }
+
+            splitLines.put(packageName, dependencies);
+        }
+        return splitLines;
+    }
+
     public boolean checkIfLineIsEmpty(String line){
         return line.equals("");
+    }
+
+    public ConcurrentHashMap<String, Package> getPackageList(String filename){
+        ArrayList<String> lines =  readFile(filename);
+        HashMap splitLines = splitLines(lines);
+
+        /*
+        Concurrent hash map is used as this map will be modified while being iterated
+         */
+        ConcurrentHashMap<String, Package> packages = new ConcurrentHashMap<>();
+
+        Set lineSet = splitLines.entrySet();
+        Iterator lineIterator = lineSet.iterator();
+        while(lineIterator.hasNext()){
+            Map.Entry me = (Map.Entry) lineIterator.next();
+
+            packages.put(me.getKey().toString(), new Package(me.getKey().toString()));
+        }
+
+        Set packageSet = packages.entrySet();
+        Iterator packageIterator = packageSet.iterator();
+        while(packageIterator.hasNext()){
+            Map.Entry me = (Map.Entry) packageIterator.next();
+
+            String[] line = (String[]) splitLines.get(me.getKey().toString());
+            Package pkg = (Package) me.getValue();
+            for(String word : line){
+                //System.out.println("The word is: " + word);
+                packages.putIfAbsent(word, new Package(word));
+                //System.out.println("The package is: " + packages.get(word));
+                pkg.setDependencies(packages.get(word));
+            }
+        }
+
+        return packages;
     }
 
 }
