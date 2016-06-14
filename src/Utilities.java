@@ -1,7 +1,3 @@
-package com.tahnik.DependencyAnalyzer.utils;
-
-import com.tahnik.DependencyAnalyzer.Package;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -90,8 +86,8 @@ public class Utilities {
      * @param lines Takes ArrayList of lines which will be split up
      * @return splitLines Hashmap of lines split in words
      */
-    public HashMap splitLines(ArrayList<String> lines){
-        HashMap splitLines = new HashMap();
+    public HashMap<String, String[]> splitLines(ArrayList<String> lines){
+        HashMap<String, String[]> splitLines = new HashMap<String, String[]>();
 
         for (String line: lines) {
             String[] lineArray = line.split("\\s+");
@@ -136,7 +132,7 @@ public class Utilities {
             System.exit(0);
         }
         ArrayList<String> lines =  readFile(filename);
-        HashMap splitLines = splitLines(lines);
+        HashMap<String, String[]> splitLines = splitLines(lines);
 
         /*
         Concurrent hash map is used as this map will be modified while being iterated.
@@ -147,10 +143,10 @@ public class Utilities {
         Iterating over spliteLines to create package using the key of spliteLines. Once all the package has been created
         their dependencies will be added.
          */
-        Set lineSet = splitLines.entrySet();
-        Iterator lineIterator = lineSet.iterator();
+        Set<Map.Entry<String, String[]>> lineSet = splitLines.entrySet();
+        Iterator<Map.Entry<String, String[]>> lineIterator = lineSet.iterator();
         while(lineIterator.hasNext()){
-            Map.Entry me = (Map.Entry) lineIterator.next();
+            Map.Entry<String, String[]> me = lineIterator.next();
             packages.put(me.getKey().toString(), new Package(me.getKey().toString()));
         }
 
@@ -161,14 +157,14 @@ public class Utilities {
         object the one in the package hashmap os retrieved and used again, just like a real life scenario a package will be used
         over and over again as needed.
          */
-        Set packageSet = packages.entrySet();
-        Iterator packageIterator = packageSet.iterator();
+        Set<Map.Entry<String, Package>> packageSet = packages.entrySet();
+        Iterator<Map.Entry<String, Package>> packageIterator = packageSet.iterator();
         while(packageIterator.hasNext()){
-            Map.Entry me = (Map.Entry) packageIterator.next();
+            Map.Entry<String, Package> me = packageIterator.next();
 
             //getting the list of dependencies
-            String[] line = (String[]) splitLines.get(me.getKey().toString());
-            Package pkg = (Package) me.getValue();
+            String[] line = splitLines.get(me.getKey().toString());
+            Package pkg = me.getValue();
 
             //for each dependency search it in the packages list. If it's not there create a new one
             if(line != null) {
@@ -187,6 +183,10 @@ public class Utilities {
      * @param args takes command line arguments to find the text file and package request
      */
     public void printPackageDependency(String[] args){
+        if(args.length < 1){
+            System.out.println("No argument provided");
+            System.exit(0);
+        }
         String filename = args[0];
         String[] packagesToDisplay = new String[args.length - 1];
         if(args.length > 1){

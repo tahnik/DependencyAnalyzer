@@ -1,7 +1,3 @@
-package com.tahnik.DependencyAnalyzer.UnitTest;
-
-import com.tahnik.DependencyAnalyzer.Package;
-import com.tahnik.DependencyAnalyzer.utils.Utilities;
 import junit.framework.TestCase;
 import org.junit.Test;
 

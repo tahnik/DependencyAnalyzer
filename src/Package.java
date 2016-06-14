@@ -1,5 +1,3 @@
-package com.tahnik.DependencyAnalyzer;
-
 import java.util.ArrayList;
 
 /**
