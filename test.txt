@@ -4,5 +4,5 @@ textui -> runner framework
 awtui -> runner
 runner -> framework gui
 extensions -> framework
-pkg -> pkgl pkgw pkg
-pkgw -> pkgr
+pkg23 -> pkgl 1pk2gw pkg23 34pkgw
+34pkgw -> pkgr

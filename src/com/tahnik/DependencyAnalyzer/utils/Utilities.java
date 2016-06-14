@@ -12,6 +12,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by Tahnik Mustasin on 10/06/2016.
  * This file contains all the utility method needed for this program.
+ * I've made this class Singleton as it doesn't have any state. This class might get really
+ * big but all the methods might not be used. So loading it in compile time will be wastage of resources.
  */
 public class Utilities {
     /* This is singleton instance */
@@ -74,9 +76,9 @@ public class Utilities {
                 ignoring any special characters.
             The third part works in a similar way
          */
-        if(!line.matches("([a-z\\s]*)(.*->.*)")
-                || (line.matches(".*\\p{Punct}.*") && !line.matches("[([a-z\\s]*)]*\\s->\\s[([a-z\\s]*)]*"))
-                || (line.matches("[\\s]*[a-z]*[\\s]*[a-z]*[\\s]*->.*") && !line.matches("[\\s]*[a-z]*[\\s]*->.*")) ){
+        if(!line.matches("([a-z0-9\\s]*)(.*->.*)")
+                || (line.matches(".*\\p{Punct}.*") && !line.matches("[([a-z0-9\\s]*)]*\\s->\\s[([a-z0-9\\s]*)]*"))
+                || (line.matches("[\\s]*[a-z0-9]*[\\s]*[a-z0-9]*[\\s]*->.*") && !line.matches("[\\s]*[a-z0-9]*[\\s]*->.*")) ){
             verificationPassed = false;
         }
         return verificationPassed;
@@ -98,6 +100,10 @@ public class Utilities {
             if(lineArray.length > 1){
                 int j = 0;
                 for(int i = 2; i < lineArray.length ; i++){
+                    if(lineArray[i].matches("[0-9]*")){
+                        System.out.println("Package name can not be only numbers! Please check your text file");
+                        System.exit(0);
+                    }
                     dependencies[j] = lineArray[i];
                     j++;
                 }
@@ -165,9 +171,11 @@ public class Utilities {
             Package pkg = (Package) me.getValue();
 
             //for each dependency search it in the packages list. If it's not there create a new one
-            for(String word : line){
-                packages.putIfAbsent(word, new Package(word));
-                pkg.setDependencies(packages.get(word));
+            if(line != null) {
+                for (String word : line) {
+                    packages.putIfAbsent(word, new Package(word));
+                    pkg.setDependencies(packages.get(word));
+                }
             }
         }
 
