@@ -24,3 +24,5 @@ Then run the program with command like this:
 java Main test.txt gui runner
 
 You can change the test.txt with your own filename
+
+![devRantFX mockup 1](http://i.imgur.com/WgyjMJ7.gif)
